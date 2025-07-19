@@ -2,7 +2,7 @@ name: Nightly Build and Test
 
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 2 * * *' # Runs at 2 AM UTC every day
   workflow_dispatch:
 
 jobs:
@@ -13,20 +13,20 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Docker Compose
-        run: docker compose -f .devcontainer/docker-compose.yml build
+        run: docker-compose -f .devcontainer/docker-compose.yml build
 
       - name: Start services
-        run: docker compose -f .devcontainer/docker-compose.yml up -d
+        run: docker-compose -f .devcontainer/docker-compose.yml up -d
 
       - name: Wait for services to be healthy
-        run: sleep 60
+        run: sleep 60 # A simple wait; a more robust solution would use health checks
 
       - name: Run Init Script
-        run: docker exec ca-gpt-free-v9-dev-container-1 /bin/bash /workspaces/ca-gpt-free-v9/.devcontainer/init.sh
+        run: docker exec ca-gpt-free-v9-dev-container /bin/bash /workspace/ca-gpt-free-v9/.devcontainer/init.sh
       
       - name: Run all tests
-        run: docker exec ca-gpt-free-v9-dev-container-1 make test
+        run: docker exec ca-gpt-free-v9-dev-container make test
 
       - name: Stop services
         if: always()
-        run: docker compose -f .devcontainer/docker-compose.yml down -v
+        run: docker-compose -f .devcontainer/docker-compose.yml down -v

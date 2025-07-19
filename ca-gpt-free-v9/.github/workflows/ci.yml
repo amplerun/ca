@@ -54,7 +54,7 @@ jobs:
         docker run -d --rm -p 11434:11434 --name ollama ollama/ollama
         sleep 5
         docker exec ollama ollama pull mistral
-        sleep 10
+        sleep 10 # Give it time to load
 
     - name: Run Server tests
       run: |
@@ -64,8 +64,11 @@ jobs:
         MONGO_URI: mongodb://localhost:27017/ca-gpt-free-test
         JWT_SECRET: test-secret
         JWT_REFRESH_SECRET: test-refresh-secret
+        ACCESS_TOKEN_EXPIRATION: 1m
+        REFRESH_TOKEN_EXPIRATION: 5m
         ENGINE_SERVICE_URL: http://localhost:8000
         AI_SERVICE_URL: http://localhost:8001
+        CORS_ORIGIN: http://localhost:8081
     
     - name: Run Engine tests
       run: |
@@ -84,3 +87,4 @@ jobs:
         JWT_SECRET: test-secret
         OLLAMA_HOST: http://localhost:11434
         OLLAMA_MODEL: mistral
+        PROMPT_CACHE_TTL_SECONDS: 1

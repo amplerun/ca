@@ -1,3 +1,6 @@
+
+`path: ca-gpt-free-v9/.gitignore`
+```gitignore
 # Node
 node_modules/
 dist/
@@ -62,6 +65,3 @@ logs/
 # Client specific
 .expo/
 web-build/
-
-# Test artifacts
-coverage/

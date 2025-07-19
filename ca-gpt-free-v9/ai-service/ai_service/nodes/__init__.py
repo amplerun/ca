@@ -3,6 +3,8 @@ from .yaml_clean_node import YamlCleanNode
 from .explain_node import ExplainNode
 from .chat_node import ChatNode
 
+# "PocketFlow" node registry
+# This allows us to dynamically select a node to run based on an API request.
 nodes = {
     "clean_yaml": YamlCleanNode(),
     "explain": ExplainNode(),
@@ -12,5 +14,5 @@ nodes = {
 def get_node(node_name: str) -> BaseNode:
     node = nodes.get(node_name)
     if not node:
-        raise ValueError(f"Node '{node_name}' not found.")
+        raise ValueError(f"Node '{node_name}' not found in registry.")
     return node

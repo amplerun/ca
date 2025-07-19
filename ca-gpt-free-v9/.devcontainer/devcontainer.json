@@ -2,7 +2,7 @@
 	"name": "ca-gpt-free-v9-dev-container",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "dev-container",
-	"workspaceFolder": "/workspaces/ca-gpt-free-v9",
+	"workspaceFolder": "/workspace/ca-gpt-free-v9",
 
 	"customizations": {
 		"vscode": {
@@ -12,9 +12,11 @@
 			"extensions": [
 				"ms-python.python",
 				"ms-python.black-formatter",
+				"ms-python.isort",
 				"ms-azuretools.vscode-docker",
 				"esbenp.prettier-vscode",
 				"dbaeumer.vscode-eslint",
+				"humao.rest-client",
 				"tamasfe.even-better-toml",
 				"ms-vscode.makefile-tools"
 			]
