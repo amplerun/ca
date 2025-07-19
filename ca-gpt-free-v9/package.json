@@ -1,0 +1,18 @@
+{
+  "name": "ca-gpt-free-v9-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client",
+    "engine",
+    "ai-service"
+  ],
+  "scripts": {
+    "dev": "make dev",
+    "test": "make test"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,86 @@
+name: AIGIS CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+      ollama:
+        image: ollama/ollama:latest
+        ports:
+          - 11434:11434
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js 18
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+
+    - name: Install root Node dependencies
+      run: npm install
+
+    - name: Install Server dependencies
+      run: cd server && npm install
+
+    - name: Install Engine dependencies
+      run: cd engine && poetry install
+
+    - name: Install AI Service dependencies
+      run: cd ai-service && poetry install
+      
+    - name: Start Ollama model
+      run: |
+        docker pull ollama/ollama
+        docker run -d --rm -p 11434:11434 --name ollama ollama/ollama
+        sleep 5
+        docker exec ollama ollama pull mistral
+        sleep 10
+
+    - name: Run Server tests
+      run: |
+        cd server
+        npm test
+      env:
+        MONGO_URI: mongodb://localhost:27017/ca-gpt-free-test
+        JWT_SECRET: test-secret
+        JWT_REFRESH_SECRET: test-refresh-secret
+        ENGINE_SERVICE_URL: http://localhost:8000
+        AI_SERVICE_URL: http://localhost:8001
+    
+    - name: Run Engine tests
+      run: |
+        cd engine
+        poetry run pytest
+      env:
+        MONGO_URI: mongodb://localhost:27017/ca-gpt-free-test
+        JWT_SECRET: test-secret
+    
+    - name: Run AI Service tests
+      run: |
+        cd ai-service
+        poetry run pytest
+      env:
+        MONGO_URI: mongodb://localhost:27017/ca-gpt-free-test
+        JWT_SECRET: test-secret
+        OLLAMA_HOST: http://localhost:11434
+        OLLAMA_MODEL: mistral

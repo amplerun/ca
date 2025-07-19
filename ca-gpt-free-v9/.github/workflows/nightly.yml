@@ -1,0 +1,32 @@
+name: Nightly Build and Test
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  nightly-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: docker compose -f .devcontainer/docker-compose.yml build
+
+      - name: Start services
+        run: docker compose -f .devcontainer/docker-compose.yml up -d
+
+      - name: Wait for services to be healthy
+        run: sleep 60
+
+      - name: Run Init Script
+        run: docker exec ca-gpt-free-v9-dev-container-1 /bin/bash /workspaces/ca-gpt-free-v9/.devcontainer/init.sh
+      
+      - name: Run all tests
+        run: docker exec ca-gpt-free-v9-dev-container-1 make test
+
+      - name: Stop services
+        if: always()
+        run: docker compose -f .devcontainer/docker-compose.yml down -v
